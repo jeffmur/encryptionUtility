@@ -1,0 +1,10 @@
+This is data that must be padded and encrypted. 
+
+We can make this long/short
+
+Doesn't really matter. Need to find a way to pad :)
+
+Need to make this longer for block size 
+
+
+Truncate and keep /n /n \t
