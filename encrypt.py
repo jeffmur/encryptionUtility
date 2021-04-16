@@ -1,8 +1,6 @@
-from pbkdf2 import PBKDF2
 from Crypto.Cipher import AES 
 from Crypto.Hash import MD5, SHA1, SHA256, SHA512, HMAC
 from Crypto.Cipher import AES, DES3
-import os
 
 import src.keyderiv as kd
 import src.cipher as c
@@ -14,15 +12,19 @@ import src.cipher as c
     Hash Algorithm
 '''
 
-hashAlgo = SHA256
+plainHash = 'SHA256'
 plainEncrypt = '3DES'
-enAlgo = DES3 if plainEncrypt == '3DES' else AES
-blockSize = c.blockSize(plainEncrypt)
-
+fileIn = 'cases/large.txt'
+fileOut = 'large.txt.enc'
 password = b"password"
 salt = kd.GlobalSalt #kd.randBytesOfLen(N=32)
 
-print(f'Salt \t \t : {salt} \n')
+# From input encryption
+hashAlgo = SHA256 if plainHash== 'SHA256' else SHA512
+enAlgo = DES3 if plainEncrypt == '3DES' else AES
+blockSize = c.blockSize(plainEncrypt)
+
+print(f'Salt \t \t : {salt}')
 
 # 1) Create a master key with C iterations, 
 # Todo: identify what dklen needs to be
@@ -31,36 +33,40 @@ print(f'Master Key \t : {kd.pp(masterKey)} ')
 
 
 # 2) Derive encryption and HMAC from master key (based on encryption algorithm)
-# Todo: Add 3DES capability
-encryptKey, hmacKey = kd.derEncryptHMAC(masterKey, hashAlgo, 'AES256')
+encryptKey, hmacKey = kd.derEncryptHMAC(masterKey, hashAlgo, plainEncrypt)
 print(f' |> Encryption \t : {kd.pp(encryptKey)}')
 print(f' |> HMAC  \t : {kd.pp(hmacKey)}')
 
 # 3) Encrypt your data using CBC chaining mode w/ 3DES, AES128, AES256
-# Todo: File input capability
 ## ENCRYPTION
 ## Key must be 16 (*AES-128*), 24 (*AES-192*), or 32 (*AES-256*) bytes long.
 
 iv = kd.randBytesOfLen(N=blockSize) # always 16 bytes
-
 cipher = enAlgo.new(encryptKey, enAlgo.MODE_CBC, iv)
 
-# Block Size & IV are constant mulitples of 16
-# TODO: Padding for AES, DES not not care :)
-testText = b"mustbeamultiof16doesDES?"
+# Input File (ALL OF IT)
+input = open(fileIn, 'r')
+raw_data = input.read()
+input.close()
 
-crypt = iv + cipher.encrypt(testText)
+# Encryption and padding
+padded_data = c.paddingBy(blockSize, raw_data)
+cipherText = cipher.encrypt(padded_data)
+bcrypt = bytes(cipherText)
+
+print(f'Length of bcrypt: {len(bcrypt)}')
 
 # 4) Create an HMAC of the IV and encrypted data
-integrity = HMAC.new(key=iv, msg=crypt, digestmod=hashAlgo).hexdigest()
+cia = HMAC.new(key=hmacKey, msg=iv+bcrypt, digestmod=hashAlgo).hexdigest().upper()
 
-header = {'HASH' : hashAlgo, 'CIPHER': enAlgo, 'INTEGRITY': integrity}
+header = {'HASH' : plainHash, 'CIPHER': plainEncrypt, 'IV': iv.decode('utf-8'), 'INTEGRITY': cia}
+bitHeader = c.dict_to_bits(header)
 
-print(f'\n --- new file --- \n Hash: {hashAlgo.__name__} \n Encryption: {enAlgo.__name__} \n IV: {iv} \n Integrity: {integrity} ')
-print(f'{crypt} \n --- EOF --- \n')
+# Write to File
+output = open(fileOut, 'wb')
+output.write(bitHeader)
+output.write(bcrypt)
+output.close()
 
-# DECRYPTION TEST
-plain = enAlgo.new(encryptKey, enAlgo.MODE_CBC, iv)
-
-print(plain.decrypt(crypt)[blockSize:])
-
+print(f'\n --- new file {fileOut} --- \n Hash: {plainHash} \n Encryption: {plainEncrypt} \n IV: {iv} \n Integrity: {cia} ')
+print('--- EOF ---')

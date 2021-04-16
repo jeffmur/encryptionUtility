@@ -25,20 +25,20 @@ def pp(key):
     '''
     return key.hex().upper()
 
-def derMasterKey(Password, Salt, c, dkLen, hashAlgo):
+def derMasterKey(Password, Salt, c, dkLen, ptHashAlgo):
     """
     @input: 
         Password - phasephrase entered by user 
         Salt - pseudo 
         Iterations - Strength 
         Key Length - TODO 
-        Hash Algorithm - SHA256, SHA512 
+        Hash Algorithm - in plaintext - SHA256, SHA512 
     """
     return PBKDF2(
         Password,
         Salt,
         c,
-        hashAlgo,
+        ptHashAlgo,
         HMAC
     ).read(dkLen) #.hex().upper().encode('ascii')
 
