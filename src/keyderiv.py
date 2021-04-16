@@ -2,7 +2,6 @@ from pbkdf2 import PBKDF2
 from Crypto.Cipher import AES 
 from Crypto.Hash import MD5, SHA, SHA256, SHA512, HMAC
 from Crypto.Cipher import AES, DES3
-import os
 import random
 import string
 
@@ -57,7 +56,7 @@ def derEncryptHMAC(masterKey, hashAlgo, encryptAlgo, encryptSalt, hmacSalt):
         hashAlgo,   # Choice of Crypto.Hash { SHA256 or SHA512 }
         HMAC        
 
-    ).read(int(keySize/2)), HMAC.new(masterKey, hmacSalt, hashAlgo).digest()
+    ).read(keySize), HMAC.new(masterKey, hmacSalt, hashAlgo).digest()
 
 # def testVector(expected, reality):
 #     '''

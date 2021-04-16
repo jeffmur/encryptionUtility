@@ -16,7 +16,6 @@ def fetchHeaderFromFile(bitFile):
             header (dict)
     '''
     header = (str(bitFile.read()).split("}")[0] + "}")[2:]
-    print(header)
     offset = len(header)
 
     return offset, json.loads(header)  
@@ -39,11 +38,11 @@ def capability(plainAlgo):
 def maxKeyCase(encryptAlgo):
     """
     Returns keys sizes based on encryption requirements
-    Key must be 16 (*AES-128*), 24 (*AES-192*), or 32 (*AES-256*) bytes long.
+    Key must be 16 (*AES-128*), 24 (*Triple DES*), or 32 (*AES-256*) bytes long.
     """
     switch = {
         'AES128': 16,
-        '3DES' : 32, # can be 16 or 24 bytes long
+        '3DES' : 24, # can be 16 or 24 bytes long
         'AES256': 32,
     }
 
@@ -77,4 +76,4 @@ def paddingBy(block, text):
     padString = ''.join(['-' for x in range(0, nextMultiple-size)])
 
     print(f'Length: {size} \n next muliple of {block} is {nextMultiple} \n after padString: {padString}')
-    return (text+padString).encode('utf-8')
+    return len(padString), (text+padString).encode('utf-8')
