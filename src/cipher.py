@@ -16,6 +16,7 @@ def fetchHeaderFromFile(bitFile):
             header (dict)
     '''
     header = (str(bitFile.read()).split("}")[0] + "}")[2:]
+    print(header)
     offset = len(header)
 
     return offset, json.loads(header)  

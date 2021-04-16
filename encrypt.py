@@ -17,31 +17,33 @@ plainEncrypt = '3DES'
 fileIn = 'cases/large.txt'
 fileOut = 'large.txt.enc'
 password = b"password"
-salt = kd.GlobalSalt #kd.randBytesOfLen(N=32)
 
 # From input encryption
-hashAlgo = SHA256 if plainHash== 'SHA256' else SHA512
-enAlgo = DES3 if plainEncrypt == '3DES' else AES
+hashAlgo = c.capability(plainHash)
+enAlgo = c.capability(plainEncrypt)
 blockSize = c.blockSize(plainEncrypt)
-
-print(f'Salt \t \t : {salt}')
 
 # 1) Create a master key with C iterations, 
 # Todo: identify what dklen needs to be
-masterKey = kd.derMasterKey(password, salt, 4096, 32, hashAlgo)
+masterSalt = kd.randBytesOfLen(N=32)
+masterKey = kd.derMasterKey(password, masterSalt, 4096, 32, hashAlgo)
 print(f'Master Key \t : {kd.pp(masterKey)} ')
 
-
 # 2) Derive encryption and HMAC from master key (based on encryption algorithm)
-encryptKey, hmacKey = kd.derEncryptHMAC(masterKey, hashAlgo, plainEncrypt)
+# With two different fixed strings
+encryptSalt = kd.randBytesOfLen(N=32)
+hmacSalt = kd.randBytesOfLen(N=32)
+
+# Gen Keys w/ added salt
+encryptKey, hmacKey = kd.derEncryptHMAC(masterKey, hashAlgo, plainEncrypt, encryptSalt, hmacSalt)
+
 print(f' |> Encryption \t : {kd.pp(encryptKey)}')
 print(f' |> HMAC  \t : {kd.pp(hmacKey)}')
 
 # 3) Encrypt your data using CBC chaining mode w/ 3DES, AES128, AES256
-## ENCRYPTION
 ## Key must be 16 (*AES-128*), 24 (*AES-192*), or 32 (*AES-256*) bytes long.
 
-iv = kd.randBytesOfLen(N=blockSize) # always 16 bytes
+iv = kd.randBytesOfLen(N=blockSize) # 16 bytes
 cipher = enAlgo.new(encryptKey, enAlgo.MODE_CBC, iv)
 
 # Input File (ALL OF IT)
@@ -59,7 +61,15 @@ print(f'Length of bcrypt: {len(bcrypt)}')
 # 4) Create an HMAC of the IV and encrypted data
 cia = HMAC.new(key=hmacKey, msg=iv+bcrypt, digestmod=hashAlgo).hexdigest().upper()
 
-header = {'HASH' : plainHash, 'CIPHER': plainEncrypt, 'IV': iv.decode('utf-8'), 'INTEGRITY': cia}
+header ={   'HASH' : plainHash, 
+            'CIPHER': plainEncrypt, 
+            'IV': iv.decode('utf-8'), 
+            'INTEGRITY': cia, 
+            'MSALT': masterSalt.decode('utf-8'),
+            'HSALT': hmacSalt.decode('utf-8'),
+            'ESALT': encryptSalt.decode('utf-8'),
+        }
+
 bitHeader = c.dict_to_bits(header)
 
 # Write to File
@@ -68,5 +78,5 @@ output.write(bitHeader)
 output.write(bcrypt)
 output.close()
 
-print(f'\n --- new file {fileOut} --- \n Hash: {plainHash} \n Encryption: {plainEncrypt} \n IV: {iv} \n Integrity: {cia} ')
+print(f'\n--- new file {fileOut} --- \n Hash: {plainHash} \n Encryption: {plainEncrypt} \n IV: {iv} \n Integrity: {cia} ')
 print('--- EOF ---')

@@ -8,9 +8,6 @@ import string
 
 import src.cipher as c
 
-GlobalSalt = b"jeffmur@uw.edu"
-# TODO: Change this
-
 '''
 @author: Jeffrey Murray Jr
 @purpose: Generate a master key from user passphrase
@@ -43,7 +40,7 @@ def derMasterKey(Password, Salt, c, dkLen, ptHashAlgo):
     ).read(dkLen) #.hex().upper().encode('ascii')
 
 
-def derEncryptHMAC(masterKey, hashAlgo, encryptAlgo):
+def derEncryptHMAC(masterKey, hashAlgo, encryptAlgo, encryptSalt, hmacSalt):
     """
     Purpose: Derives two keys from master secret key 
     @input: 
@@ -55,12 +52,12 @@ def derEncryptHMAC(masterKey, hashAlgo, encryptAlgo):
 
     return PBKDF2(
         masterKey,
-        GlobalSalt,
+        encryptSalt,
         1,          # num of iterations
         hashAlgo,   # Choice of Crypto.Hash { SHA256 or SHA512 }
         HMAC        
 
-    ).read(int(keySize/2)), HMAC.new(masterKey, GlobalSalt, hashAlgo).digest()
+    ).read(int(keySize/2)), HMAC.new(masterKey, hmacSalt, hashAlgo).digest()
 
 # def testVector(expected, reality):
 #     '''
