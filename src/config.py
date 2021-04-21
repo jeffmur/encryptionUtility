@@ -25,8 +25,7 @@ plainEncrypt = 'AES256'
 '''
 Input File Path (Plaintext -> Ciphertext)
 Can be relative to dir or long path from root
-Compabilitity: .txt,  
-TODO: TEST other file types
+Compatible with all file types (read and writes as binary)
 '''
 plainFile = 'cases/large.txt'
 

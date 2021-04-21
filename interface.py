@@ -6,9 +6,29 @@ import src.cipher as cipher
 import src.config as config
 from src.encrypt import encrypt
 from src.decrypt import decyrpt
-import sys, readchar
+import sys, os, readchar
+
+def checkInputPath(promptStatement, action):
+    '''
+    Immediate check for correct path entry (input and output entries)
+    Purpose: Allows for a redo incase of typo
+    Recursive for simplicity
+    '''
+    while(True):
+        raw = input(promptStatement)
+        if(action == 'Input'):
+            if(os.path.isfile(raw)):
+                return raw
+            else:
+                print('Error: Bad Input File! Please try again.')
+        else:
+            return raw
 
 def passprompt(prompt: str, out = sys.stdout) -> str:
+    '''
+    Prompt for User input of Password
+    For each character typed, added astrix to hide plaintext password
+    '''
     out.write(prompt); out.flush()
     password = ""
     while True:
@@ -34,15 +54,15 @@ def welcomeStatement():
     return input('Choose Option: ')
 
 def userEncrypt():
-    config.plainFile = input("Plaintext Path (relative): ")
-    config.cipherFile = input("Ciphertext Path (relative): ")
+    config.plainFile = checkInputPath("Plaintext Path (relative): ", 'Input')
+    config.cipherFile = checkInputPath("Ciphertext Path (relative): ", 'Output')
     passPhrase = passprompt('Password (secret): ')
     print('\n---- Encrypting ----')
     encrypt(passPhrase, config.defaultKDF)
 
 def userDecrypt():
-    config.cipherFile = input("Ciphertext Path (relative): ")
-    config.plainFile = input("Plaintext Path (relative): ")
+    config.cipherFile = checkInputPath("Ciphertext Path (relative): ", 'Input')
+    config.plainFile = checkInputPath("Plaintext Path (relative): ", 'Output')
     passPhrase = passprompt('Password (shared-secret): ')
     print('\n---- Decrypting ----')
     decyrpt(passPhrase)
@@ -54,7 +74,6 @@ def modifyConfig():
     - insufficent parameters
     - boundry for iteration
     '''
-    # TODO add skip?
     tmp = input('Encryption Algorithm {AES128, AES256, 3DES}: ')
     config.plainEncrypt = tmp if cipher.capability(tmp) else 'AES256'
 

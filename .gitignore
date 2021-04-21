@@ -1,6 +1,9 @@
 # VS CODE
 .vs*
 
+# Don't save encrypted files
+out/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

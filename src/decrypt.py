@@ -64,13 +64,4 @@ def decyrpt(password):
     file.truncate()
     file.close()
 
-    # TODO: remove() all padding...
-    '''
-    import os
-
-    with open(filename, 'rb+') as filehandle:
-        filehandle.seek(-1, os.SEEK_END)
-        filehandle.truncate()
-    '''
-
     print(f'--- New File: {outFile} ---')
