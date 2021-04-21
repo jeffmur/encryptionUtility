@@ -55,8 +55,8 @@ def decyrpt(password):
 
     # print(text)
     outFile = config.plainFile
-    file = open(outFile, 'w')
-    file.write(text.decode('utf-8'))
+    file = open(outFile, 'wb')
+    file.write(text)
 
     # Remove padding and close
     file.seek(0, 2)              # seek to end of file; f.seek(0, os.SEEK_END) is legal

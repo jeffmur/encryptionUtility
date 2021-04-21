@@ -66,14 +66,14 @@ def round_near_base(x, base=5):
 
 def paddingBy(block, text):
     '''
-    Input String of Text (block or line)
+    Input Bytes of Text (block or line)
     Output: padded byte[]
     '''
     size = len(text)
     # Next multiple of block_size to pad w/ 0
     nextMultiple = round_near_base(size, block)
     # Pad with incrementing values
-    padString = ''.join(['-' for x in range(0, nextMultiple-size)])
+    padString = (''.join(['-' for x in range(0, nextMultiple-size)])).encode()
 
     print(f'Length: {size} \n next muliple of {block} is {nextMultiple} \n after padString: {padString}')
-    return len(padString), (text+padString).encode('utf-8')
+    return len(padString), (text+padString)

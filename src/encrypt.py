@@ -41,7 +41,7 @@ def encrypt(password, kdfIter):
     cipher = enAlgo.new(encryptKey, enAlgo.MODE_CBC, iv)
 
     # Input File (ALL OF IT)
-    input = open(fileIn, 'r')
+    input = open(fileIn, 'rb')
     raw_data = input.read()
     input.close()
 
