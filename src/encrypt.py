@@ -57,6 +57,7 @@ def encrypt(password, kdfIter):
 
     header ={   'HASH' : plainHash, 
                 'CIPHER': plainEncrypt, 
+                'MASTER': config.masterKeyLength,
                 'IV': iv.decode('utf-8'),
                 'KDF' : kdfIter, 
                 'INTEGRITY': cia, 
