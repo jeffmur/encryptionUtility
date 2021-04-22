@@ -23,9 +23,3 @@ RUN pip3 install --upgrade pip
 RUN pip install -r requirements.txt
 # only use python shell
 ENTRYPOINT ["python3","interface.py"]
-
-# To run use :
-# $ docker run -it name:version bash
-
-# To attach persistant volume use:
-# $ docker run -it -v <Folder Name>:<Some Arbitrary Folder on the instance> name:version python bash

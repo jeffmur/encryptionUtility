@@ -6,7 +6,8 @@ import src.cipher as cipher
 import src.config as config
 from src.encrypt import encrypt
 from src.decrypt import decyrpt
-import sys, os, readchar
+from getpass import getpass
+import os
 
 def checkInputPath(promptStatement, action):
     '''
@@ -24,27 +25,6 @@ def checkInputPath(promptStatement, action):
         else:
             return raw
 
-def passprompt(prompt: str, out = sys.stdout) -> str:
-    '''
-    Prompt for User input of Password
-    For each character typed, added astrix to hide plaintext password
-    '''
-    out.write(prompt); out.flush()
-    password = ""
-    while True:
-        ch = str(readchar.readchar())
-        if ch == '\r':
-            break
-        elif ch == '\b':
-            out.write('\b \b')
-            password = password[0:len(password)-1]
-            out.flush()
-        else: 
-            password += ch
-            out.write('*')
-            out.flush()
-    return password
-
 def welcomeStatement():
     print('Welcome to Encryption Utility \n@author Jeffrey Murray Jr')
     print('0: Exit')
@@ -56,14 +36,14 @@ def welcomeStatement():
 def userEncrypt():
     config.plainFile = checkInputPath("Plaintext Path (relative): ", 'Input')
     config.cipherFile = checkInputPath("Ciphertext Path (relative): ", 'Output')
-    passPhrase = passprompt('Password (secret): ')
+    passPhrase = getpass(prompt='Password (secret): ')
     print('\n---- Encrypting ----')
     encrypt(passPhrase, config.defaultKDF)
 
 def userDecrypt():
     config.cipherFile = checkInputPath("Ciphertext Path (relative): ", 'Input')
     config.plainFile = checkInputPath("Plaintext Path (relative): ", 'Output')
-    passPhrase = passprompt('Password (shared-secret): ')
+    passPhrase = getpass('Password (shared-secret): ')
     print('\n---- Decrypting ----')
     decyrpt(passPhrase)
 
@@ -92,7 +72,6 @@ def dispatchOption(inputOption):
     Before user enters outPath and Password
     '''
     i = int(inputOption)
-    print(i)
 
     if(i == 0):
         return False
@@ -104,11 +83,11 @@ def dispatchOption(inputOption):
         modifyConfig()
     else:
         return welcomeStatement()
-    
+    print('\n')
     return True
 
 # # # MAIN Function # # #
-# Keep options available 
+# Keep options available until exit
 
 keepAlive = True
 while(keepAlive):
