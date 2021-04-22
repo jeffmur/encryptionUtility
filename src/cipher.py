@@ -6,6 +6,9 @@ from Crypto.Cipher import AES, DES3
 import json
 
 def dict_to_bits(the_dict):
+    '''
+    Translate dictionary to string
+    '''
     str = json.dumps(the_dict)
     return str.encode('utf-8')
 
@@ -22,6 +25,7 @@ def fetchHeaderFromFile(bitFile):
 
 def capability(plainAlgo):
     '''
+    Allow for extenability for new crypto & cipher options
     '''
     switch = {
         # Cipher

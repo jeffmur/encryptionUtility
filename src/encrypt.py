@@ -55,6 +55,7 @@ def encrypt(password, kdfIter):
     # 4) Create an HMAC of the IV and encrypted data
     cia = HMAC.new(key=hmacKey, msg=iv+bcrypt, digestmod=hashAlgo).hexdigest().upper()
 
+    # Meta Data Header as Dictionary
     header ={   'HASH' : plainHash, 
                 'CIPHER': plainEncrypt, 
                 'MASTER': config.masterKeyLength,

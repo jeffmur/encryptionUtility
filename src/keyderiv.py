@@ -13,7 +13,11 @@ import src.cipher as c
 '''
 
 def randBytesOfLen(chars = string.ascii_uppercase + string.digits, N=16):
-	return (''.join(random.choice(chars) for _ in range(N))).encode('utf-8')
+    '''
+    Use a pool of ascii_uppercase letters and digits
+    To generate an N sized bytes of length
+    '''
+    return (''.join(random.choice(chars) for _ in range(N))).encode('utf-8')
 
 def pp(key):
     '''
@@ -57,10 +61,3 @@ def derEncryptHMAC(masterKey, hashAlgo, encryptAlgo, encryptSalt, hmacSalt):
         HMAC        
 
     ).read(keySize), HMAC.new(masterKey, hmacSalt, hashAlgo).digest()
-
-# def testVector(expected, reality):
-#     '''
-#     '''
-#     print('Comparing Hashes:')
-#     print(f' {expected.upper()} \n {reality}')
-#     print(f'HMAC-SHA256 Matches: {expected.upper() == reality.upper()}')

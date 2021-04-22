@@ -8,6 +8,7 @@ import src.config as config
 import os
 
 def decyrpt(password):
+
     # From Configuration File
     fileIn = config.cipherFile
 
@@ -17,8 +18,8 @@ def decyrpt(password):
     tsize = os.fstat(bitFile.fileno()).st_size - offset
     bitFile.seek(offset)
 
-    bcrypt = bitFile.read(tsize) #TODO: Len of file - offset ,,, ish+
-    print(len(bcrypt))
+    ciphertext = bitFile.read(tsize)
+    print(len(ciphertext))
     bitFile.close()
 
     # Fetch Algorithm Modules & Class Objects from header
@@ -45,13 +46,13 @@ def decyrpt(password):
     print(f' |> Encryption \t : {kd.pp(encryptKey)}')
     print(f' |> HMAC  \t : {kd.pp(hmacKey)}')
 
-    cia = HMAC.new(key=hmacKey, msg=iv+bcrypt, digestmod=hashAlgo).hexdigest().upper()
+    cia = HMAC.new(key=hmacKey, msg=iv+ciphertext, digestmod=hashAlgo).hexdigest().upper()
 
     if(cia != integrityCheck):
         raise ValueError(f'ERROR: Cannot decrypt file \n |> Local : {cia} \n |> Source: {integrityCheck}')
 
     toPlain = decAlgo.new(encryptKey, decAlgo.MODE_CBC, iv)
-    text = toPlain.decrypt(bcrypt)
+    text = toPlain.decrypt(ciphertext)
 
     # print(text)
     outFile = config.plainFile

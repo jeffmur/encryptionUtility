@@ -87,7 +87,10 @@ def modifyConfig():
     config.defaultKDF = tmp if (tmp >= config.minKDF and tmp <= config.maxKDF) else 4096
 
 def dispatchOption(inputOption):
-
+    '''
+    Ensure that the InputFile exists
+    Before user enters outPath and Password
+    '''
     i = int(inputOption)
     print(i)
 
@@ -103,6 +106,9 @@ def dispatchOption(inputOption):
         return welcomeStatement()
     
     return True
+
+# # # MAIN Function # # #
+# Keep options available 
 
 keepAlive = True
 while(keepAlive):
