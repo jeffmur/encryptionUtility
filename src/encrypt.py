@@ -1,7 +1,7 @@
 from Crypto.Cipher import AES 
 from Crypto.Hash import MD5, SHA1, SHA256, SHA512, HMAC
 from Crypto.Cipher import AES, DES3
-
+from pbkdf2 import PBKDF2
 import src.keyderiv as kd
 import src.cipher as c
 import src.config as config
@@ -56,11 +56,12 @@ def encrypt(password, kdfIter):
     cia = HMAC.new(key=hmacKey, msg=iv+bcrypt, digestmod=hashAlgo).hexdigest().upper()
 
     # Meta Data Header as Dictionary
-    header ={   'HASH' : plainHash, 
+    header ={   'KDF' : "PBKDF2",
+                'HASH' : plainHash, 
                 'CIPHER': plainEncrypt, 
                 'MASTER': config.masterKeyLength,
                 'IV': iv.decode('utf-8'),
-                'KDF' : kdfIter, 
+                'KDFiter' : kdfIter, 
                 'INTEGRITY': cia, 
                 'MSALT': masterSalt.decode('utf-8'),
                 'HSALT': hmacSalt.decode('utf-8'),

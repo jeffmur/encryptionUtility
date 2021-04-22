@@ -28,7 +28,7 @@ def decyrpt(password):
     decAlgo = c.capability(header["CIPHER"])
     integrityCheck = header["INTEGRITY"]
     config.masterKeyLength = header['MASTER']
-    kdfIter = header["KDF"]
+    kdfIter = header["KDFiter"]
     masterSalt = str(header["MSALT"]).encode('utf-8')
     hmacSalt = str(header["HSALT"]).encode('utf-8')
     encryptSalt = str(header["ESALT"]).encode('utf-8')
